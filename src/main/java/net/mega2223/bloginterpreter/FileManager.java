@@ -1,4 +1,4 @@
-package net.mega2223;
+package net.mega2223.bloginterpreter;
 
 import java.io.File;
 import java.util.Objects;
@@ -15,11 +15,11 @@ public class FileManager {
             String name = folder.getName();
             switch (name){
                 case "content":
-                    break;
+                    compileContent(folder,dest);
                 case "media":
                     break;
                 case "templates":
-                    compileTemplates(src,dest);
+                    compileTemplates(folder,dest);
                     break;
                 case "style":
                     break;
@@ -45,21 +45,44 @@ public class FileManager {
     }
 
     static void compileTemplates(File srcFolder, File destFolder, String tree){
-        Utils.log("Compiling templates at " + tree + "\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
+        Utils.log("Compiling templates at " + tree + "|\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
         File[] files = srcFolder.listFiles();
         Objects.requireNonNull(files);
 
-        for (int i = 0; i < files.length; i++) {
-            File act = files[i];
-            if(act.isDirectory()){
-                compileTemplates(act,destFolder,tree + "\\" + act.getName());
+        for (File act : files) {
+            if (act.isDirectory()) {
+                compileTemplates(act, destFolder, tree + "\\" + act.getName());
                 continue;
             }
-            Interpreter.solveHTML();
+            String data = Utils.readFile(act).toString();
+            data = Interpreter.solveHTML(data);
+            Utils.saveFile(new File(destFolder.getAbsoluteFile() + tree), act.getName(), data);
         }
     }
 
     static void compileTemplates(File srcFolder, File destFolder){
         compileTemplates(srcFolder,destFolder,"");
+    }
+
+    static void compileContent(File srcFolder, File destFolder, String tree){
+        Utils.log("Compiling content templates at " + tree + "|\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
+        File[] files = srcFolder.listFiles();
+        Objects.requireNonNull(files);
+
+        for (File act : files) {
+            if (act.isDirectory()) {
+                compileContent(act, destFolder, tree + "\\" + act.getName());
+                continue;
+            }
+            String data = Utils.readFile(act).toString();
+            data = MarkdownInterpreter.mdToHTML(data);
+            String dest = act.getName();
+            dest = Utils.changeExtension(dest,"html");
+            Utils.saveFile(new File(destFolder.getAbsoluteFile() + tree), dest, data);
+        }
+    }
+
+    static void compileContent(File srcFolder, File destFolder){
+        compileContent(srcFolder, destFolder, "");
     }
 }

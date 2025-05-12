@@ -1,4 +1,4 @@
-package net.mega2223;
+package net.mega2223.bloginterpreter;
 
 import java.io.*;
 
@@ -25,11 +25,13 @@ public class Utils {
     public static void saveLog(){
         saveFile(new File(System.getProperty("User.dir")), "log.txt", log);
     }
-
     public static void saveFile(File directory, String fileName, StringBuilder data){
+        saveFile(directory,fileName,data.toString());
+    }
+    public static void saveFile(File directory, String fileName, String data){
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(directory.getAbsolutePath() + "\\" + fileName)));
-            writer.write(data.toString());
+            BufferedWriter writer = new BufferedWriter(new FileWriter(directory.getAbsolutePath() + "\\" + fileName));
+            writer.write(data);
             writer.close();
             log("Saved file " + fileName, DEBUG_TASKS);
         } catch (IOException e) {
@@ -45,11 +47,18 @@ public class Utils {
             StringBuilder data = new StringBuilder();
             while(r.ready()){
                 data.append(r.readLine());
+                data.append("\n");
             }
             return data;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String changeExtension(String name, String newExtension){
+        String[] d = name.split("\\.");
+        String extension = d[d.length-1];
+        return name.substring(0,name.length()-extension.length()) + newExtension;
     }
 
 }

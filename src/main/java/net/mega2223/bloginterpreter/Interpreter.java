@@ -1,4 +1,4 @@
-package net.mega2223;
+package net.mega2223.bloginterpreter;
 
 public class Interpreter {
     private Interpreter(){}
@@ -7,6 +7,9 @@ public class Interpreter {
 
     }
 
+    /**
+     * Reinterpreta o código HTML com as lacunas necessárias preenchidas.
+     * */
     public static String solveHTML(String src){
         return src;
     }
