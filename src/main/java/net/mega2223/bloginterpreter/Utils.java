@@ -1,9 +1,15 @@
 package net.mega2223.bloginterpreter;
 
 import java.io.*;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class Utils {
     private Utils(){}
+
+    public static final String DELIMITER_B = "::";
+    public static final String DELIMITER_E = "::";
 
     public static int DEBUG_LEVEL = 0;
     public static boolean saveLog = false;
@@ -55,10 +61,20 @@ public class Utils {
         }
     }
 
+    public static File getFile(String name){
+        String pathname = Objects.requireNonNull(Utils.class.getClassLoader().getResource(name)).toString();
+        pathname = pathname.substring(5); //whar
+        return new File(URLDecoder.decode(pathname, StandardCharsets.UTF_8));
+    }
+
     public static String changeExtension(String name, String newExtension){
         String[] d = name.split("\\.");
         String extension = d[d.length-1];
         return name.substring(0,name.length()-extension.length()) + newExtension;
+    }
+
+    public static String solveReplace(String dat, String tag, String sub){
+        return dat.replace(DELIMITER_B+tag+DELIMITER_E,sub);
     }
 
 }

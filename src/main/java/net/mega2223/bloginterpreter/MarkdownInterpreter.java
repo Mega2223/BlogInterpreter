@@ -1,5 +1,7 @@
 package net.mega2223.bloginterpreter;
 
+import java.io.File;
+
 public class MarkdownInterpreter {
     private MarkdownInterpreter(){}
 
@@ -7,9 +9,12 @@ public class MarkdownInterpreter {
         StringBuilder html = new StringBuilder();
         String[] lines = data.split("\n");
         for (String line : lines) {
-            html.append(lineToHTML(line));
+            html.append(lineToHTML(line)).append("\n");
         }
-        return html.toString();
+        String htmlData = html.toString();
+        String htmlText = Utils.readFile(Utils.getFile("TEMPLATE.html")).toString();
+        htmlText = Utils.solveReplace(htmlText,"body",htmlData);
+        return htmlText;
     }
 
     static String lineToHTML(String line){
