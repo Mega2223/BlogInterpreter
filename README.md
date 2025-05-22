@@ -7,3 +7,7 @@ O BlogInterpreter é uma aplicação java desktop que faz uma interpretação de
 Ele tem suporte a
 - Conversão (bem básica) de arquivos markdown para arquivos HTML
 - Uso de stylesheets, mídia e scripts em JS de forma dinâmica
+
+## Licença
+
+O BlogInterpreter está licenciado sob a GNU GENERAL PUBLIC LICENSE, que é uma licença copyleft forte. A redistribuição desse código e códigos derivados de forma proprietária é estritamente proibida.
