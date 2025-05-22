@@ -74,7 +74,33 @@ public class Utils {
     }
 
     public static String solveReplace(String dat, String tag, String sub){
+        if (sub == null){return dat;}
         return dat.replace(DELIMITER_B+tag+DELIMITER_E,sub);
+    }
+
+    public static File recursiveSearch(File root, String name){
+        File[] files = root.listFiles();
+        for (File file : files){
+            if(file.isDirectory()){
+                File f = recursiveSearch(file, name);
+                if(f != null){ return f; }
+            } else {
+                if(file.getName().equals(name)){
+                    return file;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static String getRelativePath(File root, File file){
+        String rootPath = root.getAbsolutePath();
+        String filePath = file.getAbsolutePath();
+        if(!filePath.contains(rootPath)){
+            Utils.log("WARNING: FILE PATH IS NOT SUBDIRECTORY FROM ROOT",Utils.DEBUG_IMPORTANT);
+            return null;
+        }
+        return filePath.replace(rootPath, "");
     }
 
 }
