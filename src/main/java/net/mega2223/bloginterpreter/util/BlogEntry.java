@@ -15,12 +15,13 @@ public class BlogEntry {
     int wordcount;
     File thumbnail;
     boolean showAtIndexPage;
+    private String link;
 
     // para fazer a interpretação da descrição e dos autores seria legal só interpretar tudo como um markdown
     // é complicado eu fazer isso para os posts que já são html todavia
     // e eu não fiz o leitor de hiperlinks ainda então meh
 
-    public BlogEntry(String title, String description, String sourceFile, Date publicationDate, List<Date> updateHistory, String[][] authors, int wordcount, File thumbnail, boolean showAtIndexPage) {
+    public BlogEntry(String title, String description, String sourceFile, Date publicationDate, List<Date> updateHistory, String[][] authors, int wordcount, File thumbnail, boolean showAtIndexPage, String link) {
         this.title = title;
         this.description = description;
         this.sourceFile = sourceFile;
@@ -30,6 +31,7 @@ public class BlogEntry {
         this.wordcount = wordcount;
         this.thumbnail = thumbnail;
         this.showAtIndexPage = showAtIndexPage;
+        this.link = link;
     }
 
     @Override
@@ -108,5 +110,13 @@ public class BlogEntry {
 
     public void setShowAtIndexPage(boolean showAtIndexPage) {
         this.showAtIndexPage = showAtIndexPage;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link){
+        this.link = link;
     }
 }

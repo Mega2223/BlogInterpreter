@@ -15,9 +15,10 @@ public class MarkdownInterpreter {
 
     public static final String PROPERTIES_PREFIX = "%-";
 
-    static String mdToHTML(String data){
+    static String mdToHTML(String data, String link){
         StringBuilder html = new StringBuilder();
         Properties properties = new Properties();
+        properties.setProperty("link",link);
         String[] lines = data.split("\n");
 
         for (String line : lines) {
@@ -117,7 +118,8 @@ public class MarkdownInterpreter {
                 authorsNsources,
                 0, // TODO
                 null,//new File(properties.getProperty("thumbnail")), // TODO isso não funciona eu acho
-                "true".equals(properties.getProperty("show_at_index")) //true no lado direito evita NullPointerEx
+                "true".equals(properties.getProperty("show_at_index")), //true no lado direito evita NullPointerEx
+                properties.getProperty("link")
         ));
     }
     /**Resolve hiperlinks e formatação HTML (breaks, bold, italics etc)*/
@@ -167,7 +169,7 @@ public class MarkdownInterpreter {
                 continue;
             }
             String data = Utils.readFile(act).toString();
-            data = mdToHTML(data);
+            data = mdToHTML(data,tree+"\\"+act.getName()); //todo a TREE funciona direito?
             String dest = act.getName();
             dest = Utils.changeExtension(dest,"html");
             Utils.saveFile(new File(destFolder.getAbsoluteFile() + tree), dest, data);

@@ -37,9 +37,9 @@ public class FileManager {
         for (File file : files) {
             if (file.isFile()) {
                 if(file.delete()){
-                    Utils.log("Deleted " + file.getName(),Utils.DEBUG_VERBOSE);
+                    Utils.log("Deleted " + file.getName(),Utils.DEBUG_DETAIL);
                 } else {
-                    Utils.log("Could not delete " + file.getName(),Utils.DEBUG_VERBOSE);
+                    Utils.log("Could not delete " + file.getName(),Utils.DEBUG_IMPORTANT);
                 }
             } else if (!file.getName().equalsIgnoreCase("src")){
                 clean(file);

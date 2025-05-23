@@ -29,6 +29,8 @@ public class Index {
             act = HTMLInterpreter.solveReplace(act,"entry_date",entry.getPublicationDate().toString());
             act = HTMLInterpreter.solveReplace(act,"entry_title", entry.getTitle());
             act = HTMLInterpreter.solveReplace(act,"entry_description", entry.getDescription());
+            act = HTMLInterpreter.solveReplace(act,"entry_link", "."+entry.getLink());
+
             //TODO THUMBNAIL RAAAARHG!!!!!
 //            act = HTMLInterpreter.solveReplace(act,"date",entry.getPublicationDate().toString());
             components.append(act).append("\n");
