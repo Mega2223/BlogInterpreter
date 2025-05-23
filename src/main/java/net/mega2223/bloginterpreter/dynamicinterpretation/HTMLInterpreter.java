@@ -1,6 +1,9 @@
-package net.mega2223.bloginterpreter;
+package net.mega2223.bloginterpreter.dynamicinterpretation;
 
 public class HTMLInterpreter {
+    public static final String DELIMITER_B = "::";
+    public static final String DELIMITER_E = "::";
+
     private HTMLInterpreter(){}
 
     // TODO auto ident
@@ -30,5 +33,10 @@ public class HTMLInterpreter {
             b.append("</").append(name).append(">");
         }
         return b.toString();
+    }
+
+    public static String solveReplace(String dat, String tag, String sub){
+        if (sub == null){return dat;}
+        return dat.replace(DELIMITER_B+tag+DELIMITER_E,sub);
     }
 }

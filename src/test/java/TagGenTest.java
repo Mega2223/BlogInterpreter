@@ -1,4 +1,4 @@
-import net.mega2223.bloginterpreter.HTMLInterpreter;
+import net.mega2223.bloginterpreter.dynamicinterpretation.HTMLInterpreter;
 
 public class TagGenTest {
     public static void main(String[] args) {

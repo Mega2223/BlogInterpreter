@@ -1,4 +1,4 @@
-package net.mega2223.bloginterpreter;
+package net.mega2223.bloginterpreter.util;
 
 import java.io.*;
 import java.net.URLDecoder;
@@ -7,9 +7,6 @@ import java.util.Objects;
 
 public class Utils {
     private Utils(){}
-
-    public static final String DELIMITER_B = "::";
-    public static final String DELIMITER_E = "::";
 
     public static int DEBUG_LEVEL = 0;
     public static boolean saveLog = false;
@@ -71,11 +68,6 @@ public class Utils {
         String[] d = name.split("\\.");
         String extension = d[d.length-1];
         return name.substring(0,name.length()-extension.length()) + newExtension;
-    }
-
-    public static String solveReplace(String dat, String tag, String sub){
-        if (sub == null){return dat;}
-        return dat.replace(DELIMITER_B+tag+DELIMITER_E,sub);
     }
 
     public static File recursiveSearch(File root, String name){
