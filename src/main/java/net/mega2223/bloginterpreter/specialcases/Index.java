@@ -2,7 +2,6 @@ package net.mega2223.bloginterpreter.specialcases;
 
 import net.mega2223.bloginterpreter.Main;
 import net.mega2223.bloginterpreter.dynamicinterpretation.HTMLInterpreter;
-import net.mega2223.bloginterpreter.dynamicinterpretation.MarkdownInterpreter;
 import net.mega2223.bloginterpreter.util.BlogEntry;
 import net.mega2223.bloginterpreter.util.Utils;
 
@@ -13,8 +12,8 @@ public class Index {
     private Index(){}
 
     public static void compileIndex(){
-
-        Main.entries.sort(Comparator.comparing(BlogEntry::getPublicationDate));
+//        Main.entries.sort(Comparator.comparing(BlogEntry::getPublicationDate));
+        Main.entries.sort((o1, o2) -> o2.getPublicationDate().compareTo(o1.getPublicationDate()));
 
         String body = Utils.readFile(
                 new File(Main.PROPERTIES.getProperty("src") + "\\dynamic\\blog index.html")

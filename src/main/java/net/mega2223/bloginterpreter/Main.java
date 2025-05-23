@@ -23,6 +23,5 @@ public class Main {
         Utils.DEBUG_LEVEL = Utils.DEBUG_VERBOSE;
 
         FileManager.compile(src,dest);
-//        System.out.println(entries);
     }
 }

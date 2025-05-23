@@ -14,30 +14,19 @@ public class FileManager {
         File[] folders = src.listFiles();
         Objects.requireNonNull(folders);
 
-        compileTemplates(new File(src.getAbsolutePath() + "\\templates"),dest);
-        MarkdownInterpreter.compileMdContent(new File(src.getAbsolutePath() + "\\content"),dest);
+        File sourceRoot = new File(src.getAbsolutePath());
 
-//        for(File folder : folders){
-//            if(folder.isFile()){continue;}
-//            String name = folder.getName();
-//            switch (name){
-//                // FIXME pq isso funciona assim? só tem uma pasta pra cada categoria
-//                // além disso tipicamente você quer que os stylesheets e as mídias passem
-//                // antes do content e dos templates
-//                case "content":
-//                    MarkdownInterpreter.compileMdContent(folder,dest);
-//                case "media":
-//                    // TODO copiar pra cima pra não quebrar a leitura?
-//                    break;
-//                case "templates":
-//                    compileTemplates(folder,dest);
-//                    break;
-//                case "style":
-//                    // os stylesheets me parece que é melhor deixar aqui
-//                    // em vez de copiar para cima
-//                    break;
-//            }
-//        }
+        File templateFolder = new File(src.getAbsolutePath() + "\\templates");
+        File contentFolder = new File(src.getAbsolutePath() + "\\content");
+        File mediaFolder = new File(src.getAbsolutePath() + "\\media");
+        File styleFolder = new File(src.getAbsolutePath() + "\\style");
+
+        Utils.cloneFolder(mediaFolder,dest);
+        Utils.cloneFolder(styleFolder,dest);
+
+        compileTemplates(templateFolder,dest);
+        MarkdownInterpreter.compileMdContent(contentFolder,dest);
+
         SpecialCases.compileSpecialCases();
     }
 

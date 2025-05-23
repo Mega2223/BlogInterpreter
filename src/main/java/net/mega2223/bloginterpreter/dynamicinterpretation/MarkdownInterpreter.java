@@ -61,10 +61,12 @@ public class MarkdownInterpreter {
             delimiter = "h" + headerLevel;
         }
 
+        line = formatParagraph(line);
+
         String tag = HTMLInterpreter.produceHTMLTag(delimiter,line);
         b.append(tag);
 
-        System.out.println(b);
+//        System.out.println(b);
         return b.append("\n").toString();
     }
 
@@ -118,9 +120,36 @@ public class MarkdownInterpreter {
                 "true".equals(properties.getProperty("show_at_index")) //true no lado direito evita NullPointerEx
         ));
     }
-
-    public static String paragraphToHTml(String paragraph){
+    /**Resolve hiperlinks e formatação HTML (breaks, bold, italics etc)*/
+    public static String formatParagraph(String paragraph){
         //TODO
+        paragraph = paragraph.strip();
+        int openBrack = paragraph.indexOf('[');
+        outer: while(openBrack != -1){
+            int closingBrack = paragraph.indexOf(']',openBrack);
+            if(closingBrack == -1){break;}
+            int openPar = closingBrack + 1, closingPar;
+            while(true){
+                char c = paragraph.charAt(openPar);
+                if (c == '(') {break;}
+                else if(c != ' '){
+                    openBrack = paragraph.indexOf('[',openBrack+1);
+                    continue outer;
+                }
+                openPar++;
+            }
+            closingPar = paragraph.indexOf(')',openPar);
+            String content = paragraph.substring(openBrack+1,closingBrack);
+            String redirect = paragraph.substring(openPar+1,closingPar);
+            String textChain = paragraph.substring(openBrack,closingPar+1);
+            String htmlChain = HTMLInterpreter.produceHTMLTag(
+                    "a",
+                    new String[][]{{"href",redirect}},
+                    content
+            );
+            Utils.log("Replacing " + textChain + " with " + htmlChain, Utils.DEBUG_VERBOSE);
+            paragraph = paragraph.replace(textChain,htmlChain);
+        }
         return paragraph;
     }
 

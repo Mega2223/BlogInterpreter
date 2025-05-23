@@ -14,7 +14,9 @@ public class Utils {
 
     public static final int DEBUG_IMPORTANT = 0;
     public static final int DEBUG_TASKS = 2;
+    public static final int DEBUG_DETAIL = 3;
     public static final int DEBUG_VERBOSE = 4;
+    public static final int DEBUG_SPAM = 5;
 
     public static void log(String dat, int level){
         if(level <= DEBUG_LEVEL){
@@ -93,6 +95,31 @@ public class Utils {
             return null;
         }
         return filePath.replace(rootPath, "");
+    }
+
+    public static void cloneFolder(File folderToClone, File destinationRoot){
+        File dest = new File(destinationRoot.getAbsolutePath()+"\\"+folderToClone.getName());
+        dest.mkdirs();
+        File[] files = folderToClone.listFiles();
+        for (File f : files){
+            if(f.isDirectory()){
+                Utils.log("Cloning folder " + f.getName() + " into " + dest.getName(),Utils.DEBUG_TASKS);
+                cloneFolder(f,dest);
+            } else {
+                File w = new File(dest.getAbsolutePath()+"\\"+f.getName());
+                try {
+                    Utils.log("Cloning file " + f.getName() + " into " + dest.getName(),Utils.DEBUG_TASKS);
+                    FileReader reader = new FileReader(f);
+                    FileWriter writer = new FileWriter(w);
+                    while(reader.ready()){
+                        writer.write(reader.read());
+                    }
+                    writer.close(); reader.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
 }
