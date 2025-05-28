@@ -8,17 +8,21 @@ public class HTMLInterpreter {
 
     // TODO auto ident
 
-    public static String produceHTMLTag(String name, String data){
-        return produceHTMLTag(name,null,true,data);
+    public static String produceHTMLTag(String tagName, String data){
+        return produceHTMLTag(tagName,null,true,data);
     }
 
-    public static String produceHTMLTag(String name, String[][] properties, String data){
-        return produceHTMLTag(name,properties,true,data);
+    public static String produceHTMLTag(String tagName, String[][] properties, String data){
+        return produceHTMLTag(tagName,properties,true,data);
     }
 
-    public static String produceHTMLTag(String name, String[][] properties, boolean closeTag, String data){
+    public static String produceHTMLTag(String tagName, String[][] properties, boolean closeTag){
+        return produceHTMLTag(tagName,properties,closeTag,"");
+    }
+
+    public static String produceHTMLTag(String tagName, String[][] properties, boolean closeTag, String data){
         StringBuilder b = new StringBuilder();
-        b.append("<").append(name);
+        b.append("<").append(tagName);
         if(properties != null){
             for (String[] property : properties) {
                 if(!(property[1].startsWith("\"") && property[1].endsWith("\""))){
@@ -28,9 +32,9 @@ public class HTMLInterpreter {
             }
         }
         b.append(">\n");
-        b.append(data).append("\n");
         if(closeTag){
-            b.append("</").append(name).append(">");
+            b.append(data).append("\n");
+            b.append("</").append(tagName).append(">");
         }
         return b.toString();
     }
@@ -38,5 +42,24 @@ public class HTMLInterpreter {
     public static String solveReplace(String dat, String tag, String sub){
         if (sub == null){return dat;}
         return dat.replace(DELIMITER_B+tag+DELIMITER_E,sub);
+    }
+
+    public static String produceHyperlink(String text, String link){
+        return HTMLInterpreter.produceHTMLTag(
+                "a",
+                new String[][]{{"href",link}},
+                text
+        );
+    }
+
+    public static String produceImageEmbed(String imagePath, String alt){
+        return HTMLInterpreter.produceHTMLTag(
+                "img",
+                new String[][]{
+                        {"src",imagePath},
+                        {"alt",alt}
+                },
+                false
+        );
     }
 }

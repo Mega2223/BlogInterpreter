@@ -128,6 +128,7 @@ public class MarkdownInterpreter {
         paragraph = paragraph.strip();
         int openBrack = paragraph.indexOf('[');
         outer: while(openBrack != -1){
+            boolean isImageEmbed = openBrack > 0 && paragraph.charAt(openBrack-1) == '!';
             int closingBrack = paragraph.indexOf(']',openBrack);
             if(closingBrack == -1){break;}
             int openPar = closingBrack + 1, closingPar;
@@ -140,15 +141,12 @@ public class MarkdownInterpreter {
                 }
                 openPar++;
             }
+
             closingPar = paragraph.indexOf(')',openPar);
             String content = paragraph.substring(openBrack+1,closingBrack);
-            String redirect = paragraph.substring(openPar+1,closingPar);
-            String textChain = paragraph.substring(openBrack,closingPar+1);
-            String htmlChain = HTMLInterpreter.produceHTMLTag(
-                    "a",
-                    new String[][]{{"href",redirect}},
-                    content
-            );
+            String link = paragraph.substring(openPar+1,closingPar);
+            String textChain = paragraph.substring(isImageEmbed ? openBrack - 1 : openBrack,closingPar+1);
+            String htmlChain = isImageEmbed ? HTMLInterpreter.produceImageEmbed(link,content) : HTMLInterpreter.produceHyperlink(content,link);
             Utils.log("Replacing " + textChain + " with " + htmlChain, Utils.DEBUG_VERBOSE);
             paragraph = paragraph.replace(textChain,htmlChain);
         }
@@ -169,7 +167,7 @@ public class MarkdownInterpreter {
                 continue;
             }
             String data = Utils.readFile(act).toString();
-            data = mdToHTML(data,tree+"\\"+act.getName()); //todo a TREE funciona direito?
+            data = mdToHTML(data,tree+"\\"+act.getName().replace(".md",".html")); //todo a TREE funciona direito?
             String dest = act.getName();
             dest = Utils.changeExtension(dest,"html");
             Utils.saveFile(new File(destFolder.getAbsoluteFile() + tree), dest, data);

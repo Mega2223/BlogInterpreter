@@ -14,12 +14,12 @@ public class FileManager {
         File[] folders = src.listFiles();
         Objects.requireNonNull(folders);
 
-        File sourceRoot = new File(src.getAbsolutePath());
+        String source = src.getAbsolutePath();
 
-        File templateFolder = new File(src.getAbsolutePath() + "\\templates");
-        File contentFolder = new File(src.getAbsolutePath() + "\\content");
-        File mediaFolder = new File(src.getAbsolutePath() + "\\media");
-        File styleFolder = new File(src.getAbsolutePath() + "\\style");
+        File templateFolder = new File(source + "\\templates");
+        File contentFolder = new File(source + "\\content");
+        File mediaFolder = new File(source + "\\media");
+        File styleFolder = new File(source + "\\style");
 
         Utils.cloneFolder(mediaFolder,dest);
         Utils.cloneFolder(styleFolder,dest);
