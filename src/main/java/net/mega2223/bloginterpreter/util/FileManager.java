@@ -16,7 +16,7 @@ public class FileManager {
 
         String source = src.getAbsolutePath();
 
-        File templateFolder = new File(source + "\\templates");
+        File hypertextFolder = new File(source + "\\hypertext");
         File contentFolder = new File(source + "\\content");
         File mediaFolder = new File(source + "\\media");
         File styleFolder = new File(source + "\\style");
@@ -24,7 +24,7 @@ public class FileManager {
         Utils.cloneFolder(mediaFolder,dest);
         Utils.cloneFolder(styleFolder,dest);
 
-        compileTemplates(templateFolder,dest);
+        compileTemplates(hypertextFolder,dest);
         MarkdownInterpreter.compileMdContent(contentFolder,dest);
 
         SpecialCases.compileSpecialCases();
@@ -48,7 +48,7 @@ public class FileManager {
     }
 
     static void compileTemplates(File srcFolder, File destFolder, String tree){
-        Utils.log("Compiling templates at " + tree + "|\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
+        Utils.log("Compiling HTML templates at " + tree + "|\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
         File[] files = srcFolder.listFiles();
         Objects.requireNonNull(files);
 

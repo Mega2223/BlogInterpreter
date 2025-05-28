@@ -2,6 +2,7 @@ package net.mega2223.bloginterpreter.dynamicinterpretation;
 
 import net.mega2223.bloginterpreter.Main;
 import net.mega2223.bloginterpreter.util.BlogEntry;
+import net.mega2223.bloginterpreter.util.Templates;
 import net.mega2223.bloginterpreter.util.Utils;
 
 import java.io.File;
@@ -26,7 +27,10 @@ public class MarkdownInterpreter {
         }
 
         String htmlBody = html.toString();
-        String htmlText = Utils.readFile(Utils.getFile("TEMPLATE.html")).toString();
+        File templateFile = new File(Templates.HTMLPageTemplate);
+        String htmlText = templateFile.exists() ?
+                Utils.readFile(templateFile).toString() :
+                Utils.readFile(Utils.getFile("TEMPLATE.html")).toString();
 
         htmlText = HTMLInterpreter.solveReplace(htmlText,"body",htmlBody);
         htmlText = HTMLInterpreter.solveReplace(htmlText,"title",properties.getProperty("title"));
@@ -73,7 +77,7 @@ public class MarkdownInterpreter {
 
     static String headProperties(Properties properties){
         StringBuilder head = new StringBuilder();
-        //TODO script
+        //TODO script JS
         String[] styles = properties.getProperty("style").split(",");
         for(String style : styles){
             style = style.strip();
@@ -109,7 +113,7 @@ public class MarkdownInterpreter {
 
         String date = properties.getProperty("date");
         //System.out.println(date);
-        Main.entries.add(new BlogEntry(
+        Main.ENTRIES.add(new BlogEntry(
                 properties.getProperty("title"),
                 properties.getProperty("description"),
                 "uh oh", // não sei como faço isso no modelo atual de forma limpa :(
@@ -122,7 +126,9 @@ public class MarkdownInterpreter {
                 properties.getProperty("link")
         ));
     }
-    /**Resolve hiperlinks e formatação HTML (breaks, bold, italics etc)*/
+    /**
+     * Resolve hiperlinks e formatação HTML (breaks, bold, italics etc)
+     * */
     public static String formatParagraph(String paragraph){
         //TODO
         paragraph = paragraph.strip();

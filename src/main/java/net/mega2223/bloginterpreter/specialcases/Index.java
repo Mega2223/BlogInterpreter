@@ -6,14 +6,13 @@ import net.mega2223.bloginterpreter.util.BlogEntry;
 import net.mega2223.bloginterpreter.util.Utils;
 
 import java.io.File;
-import java.util.Comparator;
 
 public class Index {
     private Index(){}
 
     public static void compileIndex(){
 //        Main.entries.sort(Comparator.comparing(BlogEntry::getPublicationDate));
-        Main.entries.sort((o1, o2) -> o2.getPublicationDate().compareTo(o1.getPublicationDate()));
+        Main.ENTRIES.sort((o1, o2) -> o2.getPublicationDate().compareTo(o1.getPublicationDate()));
 
         String body = Utils.readFile(
                 new File(Main.PROPERTIES.getProperty("src") + "\\dynamic\\blog index.html")
@@ -24,7 +23,7 @@ public class Index {
         ).toString();
 
         StringBuilder components = new StringBuilder();
-        for(BlogEntry entry : Main.entries){
+        for(BlogEntry entry : Main.ENTRIES){
             String act = listComponent;
             act = HTMLInterpreter.solveReplace(act,"entry_date",entry.getPublicationDate().toString());
             act = HTMLInterpreter.solveReplace(act,"entry_title", entry.getTitle());

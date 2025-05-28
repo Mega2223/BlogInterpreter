@@ -62,7 +62,7 @@ public class Utils {
 
     public static File getFile(String name){
         String pathname = Objects.requireNonNull(Utils.class.getClassLoader().getResource(name)).toString();
-        pathname = pathname.substring(5); //whar
+        pathname = pathname.substring(5);
         return new File(URLDecoder.decode(pathname, StandardCharsets.UTF_8));
     }
 
