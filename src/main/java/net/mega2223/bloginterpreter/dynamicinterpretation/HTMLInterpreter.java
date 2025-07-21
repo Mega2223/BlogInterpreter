@@ -1,5 +1,11 @@
 package net.mega2223.bloginterpreter.dynamicinterpretation;
 
+import net.mega2223.bloginterpreter.util.Utils;
+
+import java.io.File;
+import java.util.Objects;
+import java.util.Properties;
+
 public class HTMLInterpreter {
     public static final String DELIMITER_B = "::";
     public static final String DELIMITER_E = "::";
@@ -61,5 +67,42 @@ public class HTMLInterpreter {
                 },
                 false
         );
+    }
+
+    /**
+     * @param link url???
+     * */
+    static String compileHTML(String data, String link){
+        Properties properties = new Properties();
+        properties.setProperty("link",link);
+        String[] lines = data.split("\n");
+        for(int i = 0; i < lines.length; i++){
+            if (lines[i].startsWith(MarkdownInterpreter.PROPERTIES_PREFIX)){
+                lines[i] = lines[i].substring(2);
+                String[] spl = lines[i].split("=");
+                properties.setProperty(spl[0].strip(),spl[1].strip());
+            }
+        }
+        MarkdownInterpreter.compileEntry(properties);
+        return data;
+    }
+
+    public static void compileHypertextContent(File srcFolder, File destFolder, String tree){
+        Utils.log("Compiling HTML templates at " + tree + "|\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
+        File[] files = srcFolder.listFiles();
+        Objects.requireNonNull(files);
+        for (File act : files) {
+            if (act.isDirectory()) {
+                compileHypertextContent(act, destFolder, tree + "\\" + act.getName());
+                continue;
+            }
+            String data = Utils.readFile(act).toString();
+            data = compileHTML(data,tree+"\\"+act.getName());
+            Utils.saveFile(new File(destFolder.getAbsoluteFile() + tree), act.getName(), data);
+        }
+    }
+
+    public static void compileHypertextContent(File srcFolder, File destFolder){
+        compileHypertextContent(srcFolder,destFolder,"");
     }
 }

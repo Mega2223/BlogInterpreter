@@ -101,7 +101,7 @@ public class MarkdownInterpreter {
         return head.toString();
     }
 
-    static void compileEntry(Properties properties){
+    public static void compileEntry(Properties properties){
         String[] authors = properties.getProperty("authors").split(",");
         String[][] authorsNsources = new String[authors.length][2];
 
@@ -121,7 +121,7 @@ public class MarkdownInterpreter {
                 null, //update history, TODO
                 authorsNsources,
                 0, // TODO
-                null,//new File(properties.getProperty("thumbnail")), // TODO isso não funciona eu acho
+                properties.getProperty("thumbnail"),//new File(properties.getProperty("thumbnail")), // TODO isso não funciona eu acho
                 "true".equals(properties.getProperty("show_at_index")), //true no lado direito evita NullPointerEx
                 properties.getProperty("link")
         ));

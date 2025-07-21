@@ -1,5 +1,6 @@
 package net.mega2223.bloginterpreter.util;
 
+import net.mega2223.bloginterpreter.dynamicinterpretation.HTMLInterpreter;
 import net.mega2223.bloginterpreter.dynamicinterpretation.MarkdownInterpreter;
 import net.mega2223.bloginterpreter.specialcases.SpecialCases;
 
@@ -21,10 +22,10 @@ public class FileManager {
         File mediaFolder = new File(source + "\\media");
         File styleFolder = new File(source + "\\style");
 
-        Utils.cloneFolder(mediaFolder,dest);
+        //Utils.cloneFolder(mediaFolder,dest);
         Utils.cloneFolder(styleFolder,dest);
 
-        compileTemplates(hypertextFolder,dest);
+        HTMLInterpreter.compileHypertextContent(hypertextFolder,dest);
         MarkdownInterpreter.compileMdContent(contentFolder,dest);
 
         SpecialCases.compileSpecialCases();
@@ -45,25 +46,6 @@ public class FileManager {
                 clean(file);
             }
         }
-    }
-
-    static void compileTemplates(File srcFolder, File destFolder, String tree){
-        Utils.log("Compiling HTML templates at " + tree + "|\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
-        File[] files = srcFolder.listFiles();
-        Objects.requireNonNull(files);
-
-        for (File act : files) {
-            if (act.isDirectory()) {
-                compileTemplates(act, destFolder, tree + "\\" + act.getName());
-                continue;
-            }
-            String data = Utils.readFile(act).toString();
-            Utils.saveFile(new File(destFolder.getAbsoluteFile() + tree), act.getName(), data);
-        }
-    }
-
-    static void compileTemplates(File srcFolder, File destFolder){
-        compileTemplates(srcFolder,destFolder,"");
     }
 
 }

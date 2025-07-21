@@ -11,14 +11,32 @@ import java.util.Properties;
 
 public class Main {
 
+    //TODO anotação de scripts
+
     public static final Properties PROPERTIES = new Properties();
     public static final ArrayList<BlogEntry> ENTRIES = new ArrayList<>(30);
 
     public static void main(String[] args) {
-        File src = new File(args[0]);
-        File dest = new File(args[1]);
+//        PROPERTIES.setProperty("src",src.getAbsolutePath());
+//        PROPERTIES.setProperty("dest",dest.getAbsolutePath());
+        argReader: for (int i = 0; i < args.length; i++) {
+            String arg = args[i].strip();
+            switch (arg){
+                case "--html-template":
+                    i++;
+                    Templates.HTMLPageTemplate = args[i];
+                    continue;
+                case "--":
+                default:
+                    PROPERTIES.setProperty("src",args[i]);
+                    PROPERTIES.setProperty("dest",args[i+1]);
+                    break argReader;
+            }
+        }
 
+        File src = new File(PROPERTIES.getProperty("src"));
         PROPERTIES.setProperty("src",src.getAbsolutePath());
+        File dest = new File(PROPERTIES.getProperty("dest"));
         PROPERTIES.setProperty("dest",dest.getAbsolutePath());
 
         Templates.initTemplates(src.getAbsolutePath());

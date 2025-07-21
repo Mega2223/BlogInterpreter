@@ -1,8 +1,9 @@
 package net.mega2223.bloginterpreter.util;
 
-import java.io.File;
 import java.util.Date;
 import java.util.List;
+
+@SuppressWarnings("unused")
 
 public class BlogEntry {
     String title;
@@ -13,7 +14,7 @@ public class BlogEntry {
     //seria legal saber quais entries linkam outras entries
     String[][] authors; // Autores e o respectivo link de redirecionamento (opcional)
     int wordcount;
-    File thumbnail;
+    String thumbnail;
     boolean showAtIndexPage;
     private String link;
 
@@ -21,7 +22,7 @@ public class BlogEntry {
     // é complicado eu fazer isso para os posts que já são html todavia
     // e eu não fiz o leitor de hiperlinks ainda então meh
 
-    public BlogEntry(String title, String description, String sourceFile, Date publicationDate, List<Date> updateHistory, String[][] authors, int wordcount, File thumbnail, boolean showAtIndexPage, String link) {
+    public BlogEntry(String title, String description, String sourceFile, Date publicationDate, List<Date> updateHistory, String[][] authors, int wordcount, String thumbnail, boolean showAtIndexPage, String link) {
         this.title = title;
         this.description = description;
         this.sourceFile = sourceFile;
@@ -96,11 +97,11 @@ public class BlogEntry {
         this.wordcount = wordcount;
     }
 
-    public File getThumbnail() {
+    public String getThumbnail() {
         return thumbnail;
     }
 
-    public void setThumbnail(File thumbnail) {
+    public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
 

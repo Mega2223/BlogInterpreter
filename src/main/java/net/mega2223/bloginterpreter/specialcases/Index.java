@@ -29,7 +29,7 @@ public class Index {
             act = HTMLInterpreter.solveReplace(act,"entry_title", entry.getTitle());
             act = HTMLInterpreter.solveReplace(act,"entry_description", entry.getDescription());
             act = HTMLInterpreter.solveReplace(act,"entry_link", "."+entry.getLink());
-
+            act = HTMLInterpreter.solveReplace(act,"entry_image_src", entry.getThumbnail());
             //TODO THUMBNAIL RAAAARHG!!!!!
 //            act = HTMLInterpreter.solveReplace(act,"date",entry.getPublicationDate().toString());
             components.append(act).append("\n");

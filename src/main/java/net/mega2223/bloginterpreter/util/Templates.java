@@ -13,8 +13,8 @@ public class Templates {
     public static String HTMLPageTemplate = null;
 
     public static void initTemplates(String src){
-        indexPageTemplate = src + "\\dynamic\\blog index.html";
-        indexEntryTemplate = src + "\\dynamic\\blog entry.html";
-        HTMLPageTemplate = src + "\\dynamic\\TEMPLATE.html";
+        indexPageTemplate = indexPageTemplate == null ? src + "\\dynamic\\blog index.html" : indexPageTemplate;
+        indexEntryTemplate = indexEntryTemplate == null ? src + "\\dynamic\\blog entry.html" : indexEntryTemplate;
+        HTMLPageTemplate = HTMLPageTemplate == null ? src + "\\dynamic\\TEMPLATE.html" : HTMLPageTemplate;
     }
 }
