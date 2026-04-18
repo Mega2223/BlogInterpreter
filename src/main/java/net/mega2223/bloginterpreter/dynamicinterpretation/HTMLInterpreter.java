@@ -7,27 +7,31 @@ import java.util.Objects;
 import java.util.Properties;
 
 public class HTMLInterpreter {
-    public static final String DELIMITER_B = "::";
-    public static final String DELIMITER_E = "::";
+    public static final String HTML_REPLACE_PATTERN = "::.+::";    // Talvez seja legal incluir a sintaxe de comentário no próprio pattern
+    public static final String HTML_FULL_ELEMENT_PATH = "";
+    public static final String HTML_TAG_PATTERN = "";
 
     private HTMLInterpreter(){}
 
-    // TODO auto ident
-
-    public static String produceHTMLTag(String tagName, String data){
-        return produceHTMLTag(tagName,null,true,data);
+    public static String generateHTMLTag(String tagName, String data){
+        return generateHTMLTag(tagName,null,true,data);
     }
 
-    public static String produceHTMLTag(String tagName, String[][] properties, String data){
-        return produceHTMLTag(tagName,properties,true,data);
+    public static String generateHTMLTag(String tagName, String[][] properties, String data){
+        return generateHTMLTag(tagName,properties,true,data);
     }
 
-    public static String produceHTMLTag(String tagName, String[][] properties, boolean closeTag){
-        return produceHTMLTag(tagName,properties,closeTag,"");
+    public static String generateHTMLTag(String tagName, String[][] properties, boolean closeTag){
+        return generateHTMLTag(tagName,properties,closeTag,"");
     }
 
-    public static String produceHTMLTag(String tagName, String[][] properties, boolean closeTag, String data){
+    public static String generateHTMLTag(String tagName, String[][] properties, boolean closeTag, String data){
+        return generateHTMLTag(tagName, properties, closeTag, data, 0);
+    }
+
+    public static String generateHTMLTag(String tagName, String[][] properties, boolean closeTag, String data, int ident){
         StringBuilder b = new StringBuilder();
+        b.repeat("  ", Math.max(0, ident));
         b.append("<").append(tagName);
         if(properties != null){
             for (String[] property : properties) {
@@ -39,27 +43,28 @@ public class HTMLInterpreter {
         }
         b.append(">\n");
         if(closeTag){
+            b.repeat("  ", Math.max(0, ident + 1));
             b.append(data).append("\n");
             b.append("</").append(tagName).append(">");
         }
         return b.toString();
     }
 
-    public static String solveReplace(String dat, String tag, String sub){
-        if (sub == null){return dat;}
-        return dat.replace(DELIMITER_B+tag+DELIMITER_E,sub);
+    public static String replacePatternByElement(String data, String elementName, String replacedText){
+        // Dar replace em todos os elementos de data que cumprem o padrão "::elementName::"
+        return null;
     }
 
-    public static String produceHyperlink(String text, String link){
-        return HTMLInterpreter.produceHTMLTag(
+    public static String generateHyperlink(String text, String link){
+        return HTMLInterpreter.generateHTMLTag(
                 "a",
                 new String[][]{{"href",link}},
                 text
         );
     }
 
-    public static String produceImageEmbed(String imagePath, String alt){
-        return HTMLInterpreter.produceHTMLTag(
+    public static String generateImageEmbed(String imagePath, String alt){
+        return HTMLInterpreter.generateHTMLTag(
                 "img",
                 new String[][]{
                         {"src",imagePath},

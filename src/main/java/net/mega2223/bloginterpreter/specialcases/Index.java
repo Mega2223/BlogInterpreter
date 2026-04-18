@@ -25,17 +25,17 @@ public class Index {
         StringBuilder components = new StringBuilder();
         for(BlogEntry entry : Main.ENTRIES){
             String act = listComponent;
-            act = HTMLInterpreter.solveReplace(act,"entry_date",entry.getPublicationDate().toString());
-            act = HTMLInterpreter.solveReplace(act,"entry_title", entry.getTitle());
-            act = HTMLInterpreter.solveReplace(act,"entry_description", entry.getDescription());
-            act = HTMLInterpreter.solveReplace(act,"entry_link", "."+entry.getLink());
-            act = HTMLInterpreter.solveReplace(act,"entry_image_src", entry.getThumbnail());
+            act = HTMLInterpreter.replacePatternByElement(act,"entry_date",entry.getPublicationDate().toString());
+            act = HTMLInterpreter.replacePatternByElement(act,"entry_title", entry.getTitle());
+            act = HTMLInterpreter.replacePatternByElement(act,"entry_description", entry.getDescription());
+            act = HTMLInterpreter.replacePatternByElement(act,"entry_link", "."+entry.getLink());
+            act = HTMLInterpreter.replacePatternByElement(act,"entry_image_src", entry.getThumbnail());
             //TODO THUMBNAIL RAAAARHG!!!!!
 //            act = HTMLInterpreter.solveReplace(act,"date",entry.getPublicationDate().toString());
             components.append(act).append("\n");
         }
 
-        body = HTMLInterpreter.solveReplace(body,"blog_list",components.toString());
+        body = HTMLInterpreter.replacePatternByElement(body,"blog_list",components.toString());
 
         Utils.saveFile(
                 new File(Main.PROPERTIES.getProperty("dest")),

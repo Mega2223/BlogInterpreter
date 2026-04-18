@@ -32,9 +32,9 @@ public class MarkdownInterpreter {
                 Utils.readFile(templateFile).toString() :
                 Utils.readFile(Utils.getFile("TEMPLATE.html")).toString();
 
-        htmlText = HTMLInterpreter.solveReplace(htmlText,"body",htmlBody);
-        htmlText = HTMLInterpreter.solveReplace(htmlText,"title",properties.getProperty("title"));
-        htmlText = HTMLInterpreter.solveReplace(htmlText,"head",headProperties(properties));
+        htmlText = HTMLInterpreter.replacePatternByElement(htmlText,"body",htmlBody);
+        htmlText = HTMLInterpreter.replacePatternByElement(htmlText,"title",properties.getProperty("title"));
+        htmlText = HTMLInterpreter.replacePatternByElement(htmlText,"head",headProperties(properties));
 
         compileEntry(properties);
 
@@ -68,7 +68,7 @@ public class MarkdownInterpreter {
 
         line = formatParagraph(line);
 
-        String tag = HTMLInterpreter.produceHTMLTag(delimiter,line);
+        String tag = HTMLInterpreter.generateHTMLTag(delimiter,line);
         b.append(tag);
 
 //        System.out.println(b);
@@ -94,7 +94,7 @@ public class MarkdownInterpreter {
                     {"href",rootPath}
             };
             head.append(
-                    HTMLInterpreter.produceHTMLTag("link",props,false,"")
+                    HTMLInterpreter.generateHTMLTag("link",props,false,"")
             ).append("\n");
         }
 
@@ -152,7 +152,7 @@ public class MarkdownInterpreter {
             String content = paragraph.substring(openBrack+1,closingBrack);
             String link = paragraph.substring(openPar+1,closingPar);
             String textChain = paragraph.substring(isImageEmbed ? openBrack - 1 : openBrack,closingPar+1);
-            String htmlChain = isImageEmbed ? HTMLInterpreter.produceImageEmbed(link,content) : HTMLInterpreter.produceHyperlink(content,link);
+            String htmlChain = isImageEmbed ? HTMLInterpreter.generateImageEmbed(link,content) : HTMLInterpreter.generateHyperlink(content,link);
             Utils.log("Replacing " + textChain + " with " + htmlChain, Utils.DEBUG_VERBOSE);
             paragraph = paragraph.replace(textChain,htmlChain);
         }

@@ -6,9 +6,9 @@ public class TagGenTest {
                 {"class","\"par\""},
                 {"id","\"teste\""}
         };
-        String x = HTMLInterpreter.produceHTMLTag("p", props, true, "Oiee");
+        String x = HTMLInterpreter.generateHTMLTag("p", props, true, "Oiee");
         System.out.println(x);
-        if(!x.equals("<p class = \"par\" id = \"teste\" >\nOiee\n</p>")){
+        if(!x.equals("<p class = \"par\"  id = \"teste\" >\n  Oiee\n</p>")){
             throw new RuntimeException("Failed tag generation test");
         }
     }
