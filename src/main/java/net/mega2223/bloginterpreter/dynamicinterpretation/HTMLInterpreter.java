@@ -5,9 +5,11 @@ import net.mega2223.bloginterpreter.util.Utils;
 import java.io.File;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HTMLInterpreter {
-    public static final String HTML_REPLACE_PATTERN = "::.+::";    // Talvez seja legal incluir a sintaxe de comentário no próprio pattern
+    public static final String HTML_REPLACE_PATTERN_TEMPLATE = "::%s::";    // Talvez seja legal incluir a sintaxe de comentário no próprio pattern
     public static final String HTML_FULL_ELEMENT_PATH = "";
     public static final String HTML_TAG_PATTERN = "";
 
@@ -52,7 +54,11 @@ public class HTMLInterpreter {
 
     public static String replacePatternByElement(String data, String elementName, String replacedText){
         // Dar replace em todos os elementos de data que cumprem o padrão "::elementName::"
-        return null;
+        Pattern htmlReplacePattern = Pattern.compile(
+                String.format(HTML_REPLACE_PATTERN_TEMPLATE,elementName)
+        );
+        Matcher m = htmlReplacePattern.matcher(data);
+        return m.replaceAll(replacedText);
     }
 
     public static String generateHyperlink(String text, String link){
