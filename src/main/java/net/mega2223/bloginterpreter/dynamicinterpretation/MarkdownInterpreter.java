@@ -105,7 +105,8 @@ public class MarkdownInterpreter {
     static final String MARKDOWN_HYPERLINK_PATTERN = "\\[([^\\[\\]()]+)]\\(([^\\[\\]()]+)\\)";
     static final String MARKDOWN_ITALICS_PATTERN = "_([^_]+)_";
     static final String MARKDOWN_BOLD_PATTERN = "\\*\\*([^*]+)\\*\\*";
-    static final String PROPERTY_PATTERN = "%-? +([^= ]+)? += +(.+)[ \\n]?";
+    static final String PROPERTY_PATTERN = "%- *([^=]+?) *= *([^\\n]+?) *\\n";
+    // %-? +([^= ]+)? += +(.+)[ \n]?
     static final String MARKDOWN_IMAGE_PATTERN = "!\\[([^\\[\\]()]+)]\\(([^\\[\\]()]+)\\)";
 
     static Pattern[] markdownPatterns = {

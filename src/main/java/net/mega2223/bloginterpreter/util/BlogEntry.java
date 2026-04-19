@@ -3,7 +3,7 @@ package net.mega2223.bloginterpreter.util;
 import net.mega2223.bloginterpreter.objects.Person;
 
 import java.util.ArrayList;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -49,10 +49,11 @@ public class BlogEntry {
                 properties.getProperty("description"),
                 content,
                 URL,
-                Date.valueOf(properties.getProperty("date")),
+                Utils.stringToDate(properties.getProperty("date")),
                 properties.getProperty("thumbnail"),
                 0 // TODO
         );
+
     }
 
     @Override

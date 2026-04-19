@@ -5,7 +5,11 @@ import net.mega2223.bloginterpreter.BlogInterpreter;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.Objects;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
     private Utils(){}
@@ -125,4 +129,15 @@ public class Utils {
         }
     }
 
+    static final Pattern dateRegex = Pattern.compile("(\\d{4})-(\\d{1,2})-(\\d{1,2})");
+    public static Date stringToDate(String data){
+        Matcher m = dateRegex.matcher(data);
+        if (m.find()) {
+            int year = Integer.parseInt(m.group(1));
+            int month = Integer.parseInt(m.group(2));
+            int day = Integer.parseInt(m.group(3));
+            return new Date(year,month,day);
+        }
+        return null;
+    }
 }
