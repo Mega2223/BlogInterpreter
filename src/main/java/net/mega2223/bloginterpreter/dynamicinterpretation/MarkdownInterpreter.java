@@ -1,17 +1,14 @@
 package net.mega2223.bloginterpreter.dynamicinterpretation;
 
 import net.mega2223.bloginterpreter.BlogInterpreter;
+import net.mega2223.bloginterpreter.util.BlogEntry;
 import net.mega2223.bloginterpreter.util.Templates;
 import net.mega2223.bloginterpreter.util.Utils;
 
 import java.io.File;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.function.Consumer;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 public class MarkdownInterpreter {
 
@@ -20,6 +17,7 @@ public class MarkdownInterpreter {
     public static final String PROPERTIES_PREFIX = "%-";
 
     static String mdToHTML(String data, String link){
+        //TODO eu nao vejo proposito em iterar por linhas
         StringBuilder bodyB = new StringBuilder();
         Properties properties = new Properties();
         properties.setProperty("link",link);
@@ -60,7 +58,7 @@ public class MarkdownInterpreter {
         }
 
         int headerLevel = 0;
-        for (int i = 0; line.charAt(i) == '#'; i++) {
+        for (int i = 0; line.charAt(i) == '#'; i++) { // TODO meu deus usa um regex aqui
             headerLevel++;
         }
         line = line.substring(headerLevel).strip();
@@ -104,22 +102,35 @@ public class MarkdownInterpreter {
         return head.toString();
     }
 
-    static final String MARKDOWN_HYPERLINK_PATTERN = "\\[([^\\[\\]\\(\\)]+)\\]\\(([^\\[\\]\\(\\)]+)\\)";
+    static final String MARKDOWN_HYPERLINK_PATTERN = "\\[([^\\[\\]()]+)]\\(([^\\[\\]()]+)\\)";
     static final String MARKDOWN_ITALICS_PATTERN = "_([^_]+)_";
     static final String MARKDOWN_BOLD_PATTERN = "\\*\\*([^*]+)\\*\\*";
+    static final String PROPERTY_PATTERN = "%-? +([^= ]+)? += +(.+)[ \\n]?";
+    static final String MARKDOWN_IMAGE_PATTERN = "!\\[([^\\[\\]()]+)]\\(([^\\[\\]()]+)\\)";
 
     static Pattern[] markdownPatterns = {
             Pattern.compile(MARKDOWN_HYPERLINK_PATTERN),
             Pattern.compile(MARKDOWN_ITALICS_PATTERN),
-            Pattern.compile(MARKDOWN_BOLD_PATTERN)
+            Pattern.compile(MARKDOWN_BOLD_PATTERN),
+            Pattern.compile(PROPERTY_PATTERN),
+            Pattern.compile(MARKDOWN_IMAGE_PATTERN)
     };
     /**
      * Resolve hiperlinks e formatação HTML (breaks, bold, italics etc)
      * */
     public static String formatParagraph(String paragraph){
         StringBuilder formattedParagraph = new StringBuilder();
+        Matcher imageMatcher = markdownPatterns[4].matcher(paragraph);
+        while(imageMatcher.find()){
+            String imgDesc = imageMatcher.group(1);
+            String link = imageMatcher.group(2);
+            String hypertextLink = HTMLInterpreter.getImageEmbed(link,imgDesc);
+            imageMatcher.appendReplacement(formattedParagraph,hypertextLink);
+        }
+        imageMatcher.appendTail(formattedParagraph);
 
-        Matcher hyperlinkMatcher = markdownPatterns[0].matcher(paragraph);
+        Matcher hyperlinkMatcher = markdownPatterns[0].matcher(formattedParagraph);
+        formattedParagraph = new StringBuilder();
         while(hyperlinkMatcher.find()){
             String displayText = hyperlinkMatcher.group(1);
             String link = hyperlinkMatcher.group(2);
@@ -149,6 +160,15 @@ public class MarkdownInterpreter {
         return formattedParagraph.toString();
     }
 
+    public static Properties extractProperties(String markdownData){
+        Properties properties = new Properties();
+        Matcher matcher = markdownPatterns[3].matcher(markdownData);
+        while(matcher.find()){
+            properties.setProperty(matcher.group(1), matcher.group(2));
+        }
+        return properties;
+    }
+
     /**
      * Compila o conteúdo markdown nessa pasta e em todas as sub-pastas de forma recursiva.
      * */
@@ -166,7 +186,10 @@ public class MarkdownInterpreter {
                 continue;
             }
             String data = Utils.readFile(act).toString();
-            data = mdToHTML(data,fileTree + BlogInterpreter.FILE_SEPARATOR +act.getName().replace(".md",".html")); //todo a TREE funciona direito?
+            Properties p = extractProperties(data);
+            String URL = fileTree + BlogInterpreter.FILE_SEPARATOR + act.getName().replace(".md", ".html");
+            BlogInterpreter.ENTRIES.add(new BlogEntry(p,data,URL));
+            data = mdToHTML(data, URL); //todo a TREE funciona direito?
             String dest = act.getName();
             dest = Utils.changeExtension(dest,"html");
             Utils.saveFile(new File(destFolder.getAbsoluteFile() + fileTree), dest, data);

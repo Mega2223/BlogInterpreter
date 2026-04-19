@@ -3,8 +3,9 @@ package net.mega2223.bloginterpreter.util;
 import net.mega2223.bloginterpreter.objects.Person;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
+import java.util.Properties;
 
 @SuppressWarnings("unused")
 
@@ -26,11 +27,12 @@ public class BlogEntry {
     // é complicado eu fazer isso para os posts que já são html todavia
     // e eu não fiz o leitor de hiperlinks ainda então meh
 
-    public BlogEntry(String title, String description, String content, Date publicationDate, String thumbnailPath, int wordCount) {
+    public BlogEntry(String title, String description, String content, String URL, Date publicationDate, String thumbnailPath, int wordCount) {
         this.title = title;
         this.description = description;
         this.content = content;
         this.publicationDate = publicationDate;
+        this.URL = URL;
 
         this.wordCount = wordCount;
         this.thumbnailPath = thumbnailPath;
@@ -39,6 +41,18 @@ public class BlogEntry {
         this.authors = new ArrayList<>();
         this.internalLinks = new ArrayList<>();
         this.externaLinks = new ArrayList<>();
+    }
+
+    public BlogEntry(Properties properties, String content, String URL){
+        this(
+                properties.getProperty("title"),
+                properties.getProperty("description"),
+                content,
+                URL,
+                Date.valueOf(properties.getProperty("date")),
+                properties.getProperty("thumbnail"),
+                0 // TODO
+        );
     }
 
     @Override

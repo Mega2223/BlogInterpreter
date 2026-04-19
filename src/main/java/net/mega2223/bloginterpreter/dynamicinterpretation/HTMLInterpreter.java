@@ -59,6 +59,8 @@ public class HTMLInterpreter {
 
     public static String replacePatternByElement(String data, String elementName, String replacedText){
         // Dar replace em todos os elementos de data que cumprem o padrão "::elementName::"
+        if(replacedText == null) return "";
+
         Pattern htmlReplacePattern = Pattern.compile(
                 String.format(HTML_REPLACE_PATTERN_TEMPLATE,elementName)
         );
