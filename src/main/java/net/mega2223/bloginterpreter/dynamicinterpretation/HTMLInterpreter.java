@@ -3,8 +3,9 @@ package net.mega2223.bloginterpreter.dynamicinterpretation;
 import net.mega2223.bloginterpreter.util.Utils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +13,9 @@ public class HTMLInterpreter {
     public static final String HTML_REPLACE_PATTERN_TEMPLATE = "::%s::";    // Talvez seja legal incluir a sintaxe de comentário no próprio pattern
     public static final String HTML_FULL_ELEMENT_PATH = "";
     public static final String HTML_TAG_PATTERN = "";
+
+    public static final String BOLD_TEXT_TEMPLATE = "<b>%s</b>";
+    public static final String ITALICIZED_TEXT_TEMPLATE = " <i>%s</i>";
 
     private HTMLInterpreter(){}
 
@@ -52,6 +56,7 @@ public class HTMLInterpreter {
         return b.toString();
     }
 
+
     public static String replacePatternByElement(String data, String elementName, String replacedText){
         // Dar replace em todos os elementos de data que cumprem o padrão "::elementName::"
         Pattern htmlReplacePattern = Pattern.compile(
@@ -61,7 +66,7 @@ public class HTMLInterpreter {
         return m.replaceAll(replacedText);
     }
 
-    public static String generateHyperlink(String text, String link){
+    public static String getHyperlink(String text, String link){
         return HTMLInterpreter.generateHTMLTag(
                 "a",
                 new String[][]{{"href",link}},
@@ -69,51 +74,61 @@ public class HTMLInterpreter {
         );
     }
 
-    public static String generateImageEmbed(String imagePath, String alt){
+    public static String getImageEmbed(String imagePath, String alt){
         return HTMLInterpreter.generateHTMLTag(
                 "img",
                 new String[][]{
                         {"src",imagePath},
                         {"alt",alt}
-                },
-                false
+                }, false
         );
     }
 
-    /**
-     * @param link url???
-     * */
-    static String compileHTML(String data, String link){
-        Properties properties = new Properties();
-        properties.setProperty("link",link);
-        String[] lines = data.split("\n");
-        for(int i = 0; i < lines.length; i++){
-            if (lines[i].startsWith(MarkdownInterpreter.PROPERTIES_PREFIX)){
-                lines[i] = lines[i].substring(2);
-                String[] spl = lines[i].split("=");
-                properties.setProperty(spl[0].strip(),spl[1].strip());
-            }
-        }
-        MarkdownInterpreter.compileEntry(properties);
-        return data;
+    public static String getBold(String content){
+        return String.format(BOLD_TEXT_TEMPLATE,content);
     }
 
-    public static void compileHypertextContent(File srcFolder, File destFolder, String tree){
-        Utils.log("Compiling HTML templates at " + tree + "|\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
+    public static String getItalicized(String content){
+        return String.format(ITALICIZED_TEXT_TEMPLATE,content);
+    }
+
+    // Tarefa que compila os HTMLs, em tese deve fazer a recursão corretamente
+    public static void compileHypertextContent(File srcFolder, File destFolder, String treeFromSrc, List<TagToReplace> tags){
+        Utils.log("Compiling HTML templates at " + treeFromSrc + "|\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
         File[] files = srcFolder.listFiles();
-        Objects.requireNonNull(files);
+        if(files == null){
+            System.err.println("File \"" + srcFolder.getAbsolutePath() + "\" is not a folder");
+            System.exit(-2);
+        }
         for (File act : files) {
             if (act.isDirectory()) {
-                compileHypertextContent(act, destFolder, tree + "\\" + act.getName());
+                compileHypertextContent(act, destFolder, treeFromSrc + "\\" + act.getName(), tags);
                 continue;
             }
             String data = Utils.readFile(act).toString();
-            data = compileHTML(data,tree+"\\"+act.getName());
-            Utils.saveFile(new File(destFolder.getAbsoluteFile() + tree), act.getName(), data);
+            if(tags != null){
+                for (TagToReplace tag : tags) {
+                    // TODO patterns recursivos?
+                    data = replacePatternByElement(data,tag.tag,tag.content);
+                }
+            }
+            Utils.saveFile(new File(destFolder.getAbsoluteFile() + treeFromSrc), act.getName(), data);
         }
     }
 
-    public static void compileHypertextContent(File srcFolder, File destFolder){
-        compileHypertextContent(srcFolder,destFolder,"");
+    public static void compileHypertextContent(File srcFolder, File destFolder, List<TagToReplace> tags){
+        compileHypertextContent(srcFolder,destFolder,"",tags);
+    }
+
+    public static class TagToReplace {
+        String tag; String content;
+        public TagToReplace(String tag, String content) {
+            this.tag = tag;
+            this.content = content;
+        }
+    }
+
+    public static List<TagToReplace> defaultTags() {
+        return new ArrayList<>();
     }
 }

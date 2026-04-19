@@ -1,5 +1,7 @@
 package net.mega2223.bloginterpreter.util;
 
+import net.mega2223.bloginterpreter.BlogInterpreter;
+
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -35,7 +37,7 @@ public class Utils {
     }
     public static void saveFile(File directory, String fileName, String data){
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(directory.getAbsolutePath() + "\\" + fileName));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(directory.getAbsolutePath() + BlogInterpreter.FILE_SEPARATOR + fileName));
             writer.write(data);
             writer.close();
             log("Saved file " + fileName, DEBUG_TASKS);
@@ -98,7 +100,8 @@ public class Utils {
     }
 
     public static void cloneFolder(File folderToClone, File destinationRoot){
-        File dest = new File(destinationRoot.getAbsolutePath()+"\\"+folderToClone.getName());
+        File dest = new File(destinationRoot.getAbsolutePath() +
+                BlogInterpreter.FILE_SEPARATOR + folderToClone.getName());
         dest.mkdirs();
         File[] files = folderToClone.listFiles();
         for (File f : files){
@@ -106,7 +109,7 @@ public class Utils {
                 Utils.log("Cloning folder " + f.getName() + " into " + dest.getName(),Utils.DEBUG_TASKS);
                 cloneFolder(f,dest);
             } else {
-                File w = new File(dest.getAbsolutePath()+"\\"+f.getName());
+                File w = new File(dest.getAbsolutePath()+BlogInterpreter.FILE_SEPARATOR+f.getName());
                 try {
                     Utils.log("Cloning file " + f.getName() + " into " + dest.getName(),Utils.DEBUG_TASKS);
                     FileReader reader = new FileReader(f);

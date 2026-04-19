@@ -1,14 +1,17 @@
 package net.mega2223.bloginterpreter.dynamicinterpretation;
 
-import net.mega2223.bloginterpreter.Main;
-import net.mega2223.bloginterpreter.util.BlogEntry;
+import net.mega2223.bloginterpreter.BlogInterpreter;
 import net.mega2223.bloginterpreter.util.Templates;
 import net.mega2223.bloginterpreter.util.Utils;
 
 import java.io.File;
-import java.sql.Date;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class MarkdownInterpreter {
 
@@ -17,26 +20,27 @@ public class MarkdownInterpreter {
     public static final String PROPERTIES_PREFIX = "%-";
 
     static String mdToHTML(String data, String link){
-        StringBuilder html = new StringBuilder();
+        StringBuilder bodyB = new StringBuilder();
         Properties properties = new Properties();
         properties.setProperty("link",link);
         String[] lines = data.split("\n");
 
         for (String line : lines) {
-            html.append(lineToHTML(line, properties));
+            bodyB.append(lineToHTML(line, properties));
         }
 
-        String htmlBody = html.toString();
+        String htmlBody = bodyB.toString();
         File templateFile = new File(Templates.HTMLPageTemplate);
         String htmlText = templateFile.exists() ?
                 Utils.readFile(templateFile).toString() :
                 Utils.readFile(Utils.getFile("TEMPLATE.html")).toString();
 
-        htmlText = HTMLInterpreter.replacePatternByElement(htmlText,"body",htmlBody);
         htmlText = HTMLInterpreter.replacePatternByElement(htmlText,"title",properties.getProperty("title"));
         htmlText = HTMLInterpreter.replacePatternByElement(htmlText,"head",headProperties(properties));
+        htmlText = HTMLInterpreter.replacePatternByElement(htmlText,"body",htmlBody);
 
-        compileEntry(properties);
+//        compileEntry(properties);
+        // TODO quebrou tudo aqui kkkmkkkajfk
 
         return htmlText;
     }
@@ -71,7 +75,6 @@ public class MarkdownInterpreter {
         String tag = HTMLInterpreter.generateHTMLTag(delimiter,line);
         b.append(tag);
 
-//        System.out.println(b);
         return b.append("\n").toString();
     }
 
@@ -81,7 +84,7 @@ public class MarkdownInterpreter {
         String[] styles = properties.getProperty("style").split(",");
         for(String style : styles){
             style = style.strip();
-            File root = new File(Main.PROPERTIES.getProperty("src"));
+            File root = new File(BlogInterpreter.PROPERTIES.getProperty("src"));
             File stylesheet = Utils.recursiveSearch(root,style);
             if(stylesheet == null){
                 Utils.log("WARNING: COULD NOT FIND STYLESHEET" + style,Utils.DEBUG_IMPORTANT);
@@ -101,82 +104,72 @@ public class MarkdownInterpreter {
         return head.toString();
     }
 
-    public static void compileEntry(Properties properties){
-        String[] authors = properties.getProperty("authors").split(",");
-        String[][] authorsNsources = new String[authors.length][2];
+    static final String MARKDOWN_HYPERLINK_PATTERN = "\\[([^\\[\\]\\(\\)]+)\\]\\(([^\\[\\]\\(\\)]+)\\)";
+    static final String MARKDOWN_ITALICS_PATTERN = "_([^_]+)_";
+    static final String MARKDOWN_BOLD_PATTERN = "\\*\\*([^*]+)\\*\\*";
 
-        for (int i = 0; i < authors.length; i++) {
-            String[] split = authors[0].split(":");
-            authorsNsources[i][0] = split[0];
-            authorsNsources[i][1] = split.length > 1 ? split[1] : "";
-        }
-
-        String date = properties.getProperty("date");
-        //System.out.println(date);
-        Main.ENTRIES.add(new BlogEntry(
-                properties.getProperty("title"),
-                properties.getProperty("description"),
-                "uh oh", // não sei como faço isso no modelo atual de forma limpa :(
-                Date.valueOf(date), //TODO suporte para a hora, 22:23 atualmente (nice)
-                null, //update history, TODO
-                authorsNsources,
-                0, // TODO
-                properties.getProperty("thumbnail"),//new File(properties.getProperty("thumbnail")), // TODO isso não funciona eu acho
-                "true".equals(properties.getProperty("show_at_index")), //true no lado direito evita NullPointerEx
-                properties.getProperty("link")
-        ));
-    }
+    static Pattern[] markdownPatterns = {
+            Pattern.compile(MARKDOWN_HYPERLINK_PATTERN),
+            Pattern.compile(MARKDOWN_ITALICS_PATTERN),
+            Pattern.compile(MARKDOWN_BOLD_PATTERN)
+    };
     /**
      * Resolve hiperlinks e formatação HTML (breaks, bold, italics etc)
      * */
     public static String formatParagraph(String paragraph){
-        //TODO
-        paragraph = paragraph.strip();
-        int openBrack = paragraph.indexOf('[');
-        outer: while(openBrack != -1){
-            boolean isImageEmbed = openBrack > 0 && paragraph.charAt(openBrack-1) == '!';
-            int closingBrack = paragraph.indexOf(']',openBrack);
-            if(closingBrack == -1){break;}
-            int openPar = closingBrack + 1, closingPar;
-            while(true){
-                char c = paragraph.charAt(openPar);
-                if (c == '(') {break;}
-                else if(c != ' '){
-                    openBrack = paragraph.indexOf('[',openBrack+1);
-                    continue outer;
-                }
-                openPar++;
-            }
+        StringBuilder formattedParagraph = new StringBuilder();
 
-            closingPar = paragraph.indexOf(')',openPar);
-            String content = paragraph.substring(openBrack+1,closingBrack);
-            String link = paragraph.substring(openPar+1,closingPar);
-            String textChain = paragraph.substring(isImageEmbed ? openBrack - 1 : openBrack,closingPar+1);
-            String htmlChain = isImageEmbed ? HTMLInterpreter.generateImageEmbed(link,content) : HTMLInterpreter.generateHyperlink(content,link);
-            Utils.log("Replacing " + textChain + " with " + htmlChain, Utils.DEBUG_VERBOSE);
-            paragraph = paragraph.replace(textChain,htmlChain);
+        Matcher hyperlinkMatcher = markdownPatterns[0].matcher(paragraph);
+        while(hyperlinkMatcher.find()){
+            String displayText = hyperlinkMatcher.group(1);
+            String link = hyperlinkMatcher.group(2);
+            String hypertextLink = HTMLInterpreter.getHyperlink(displayText,link);
+            hyperlinkMatcher.appendReplacement(formattedParagraph,hypertextLink);
         }
-        return paragraph;
+        hyperlinkMatcher.appendTail(formattedParagraph);
+
+        Matcher italicsMatcher = markdownPatterns[1].matcher(formattedParagraph);
+        formattedParagraph = new StringBuilder();
+        while(italicsMatcher.find()){
+            String word = italicsMatcher.group(1);
+            String italicized = HTMLInterpreter.getItalicized(word);
+            italicsMatcher.appendReplacement(formattedParagraph,italicized);
+        }
+        italicsMatcher.appendTail(formattedParagraph);
+
+        Matcher boldMatcher = markdownPatterns[2].matcher(formattedParagraph);
+        formattedParagraph = new StringBuilder();
+        while(boldMatcher.find()){
+            String word = boldMatcher.group(1);
+            String bolded = HTMLInterpreter.getBold(word);
+            boldMatcher.appendReplacement(formattedParagraph,bolded);
+        }
+        boldMatcher.appendTail(formattedParagraph);
+
+        return formattedParagraph.toString();
     }
 
     /**
      * Compila o conteúdo markdown nessa pasta e em todas as sub-pastas de forma recursiva.
      * */
-    public static void compileMdContent(File srcFolder, File destFolder, String tree){
-        Utils.log("Compiling content templates at " + tree + "|\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
+    public static void compileMdContent(File srcFolder, File destFolder, String fileTree){
+        Utils.log("Compiling md templates at " + fileTree + "|\\" + srcFolder.getName(),Utils.DEBUG_TASKS);
         File[] files = srcFolder.listFiles();
-        Objects.requireNonNull(files);
+        if(files == null){
+            System.err.println("File \"" + srcFolder.getAbsolutePath() + "\" is not a folder");
+            System.exit(-2);
+        }
 
         for (File act : files) {
             if (act.isDirectory()) {
-                compileMdContent(act, destFolder, tree + "\\" + act.getName());
+                compileMdContent(act, destFolder, fileTree + BlogInterpreter.FILE_SEPARATOR + act.getName());
                 continue;
             }
             String data = Utils.readFile(act).toString();
-            data = mdToHTML(data,tree+"\\"+act.getName().replace(".md",".html")); //todo a TREE funciona direito?
+            data = mdToHTML(data,fileTree + BlogInterpreter.FILE_SEPARATOR +act.getName().replace(".md",".html")); //todo a TREE funciona direito?
             String dest = act.getName();
             dest = Utils.changeExtension(dest,"html");
-            Utils.saveFile(new File(destFolder.getAbsoluteFile() + tree), dest, data);
+            Utils.saveFile(new File(destFolder.getAbsoluteFile() + fileTree), dest, data);
         }
     }
 

@@ -1,43 +1,49 @@
 package net.mega2223.bloginterpreter.util;
 
+import net.mega2223.bloginterpreter.objects.Person;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("unused")
 
 public class BlogEntry {
-    String title;
-    String description;
-    String sourceFile;
+    String title; String description; String content;
+    String URL; // URL RELATIVO !!!
     Date publicationDate;
     List<Date> updateHistory; // como eu implemento isso?
-    //seria legal saber quais entries linkam outras entries
-    String[][] authors; // Autores e o respectivo link de redirecionamento (opcional)
-    int wordcount;
-    String thumbnail;
+
+    List<Person> authors;
+    List<BlogEntry> internalLinks;
+    List<String> externaLinks;
+
+    int wordCount;
+    String thumbnailPath;
     boolean showAtIndexPage;
-    private String link;
 
     // para fazer a interpretação da descrição e dos autores seria legal só interpretar tudo como um markdown
     // é complicado eu fazer isso para os posts que já são html todavia
     // e eu não fiz o leitor de hiperlinks ainda então meh
 
-    public BlogEntry(String title, String description, String sourceFile, Date publicationDate, List<Date> updateHistory, String[][] authors, int wordcount, String thumbnail, boolean showAtIndexPage, String link) {
+    public BlogEntry(String title, String description, String content, Date publicationDate, String thumbnailPath, int wordCount) {
         this.title = title;
         this.description = description;
-        this.sourceFile = sourceFile;
+        this.content = content;
         this.publicationDate = publicationDate;
-        this.updateHistory = updateHistory;
-        this.authors = authors;
-        this.wordcount = wordcount;
-        this.thumbnail = thumbnail;
-        this.showAtIndexPage = showAtIndexPage;
-        this.link = link;
+
+        this.wordCount = wordCount;
+        this.thumbnailPath = thumbnailPath;
+
+        this.showAtIndexPage = true;
+        this.authors = new ArrayList<>();
+        this.internalLinks = new ArrayList<>();
+        this.externaLinks = new ArrayList<>();
     }
 
     @Override
     public String toString() {
-        return "BlogEntry\nTitle: " +title + "\nDescription: " + description + "\nThumbnail: " + thumbnail +
+        return "BlogEntry\nTitle: " +title + "\nDescription: " + description + "\nThumbnail: " + thumbnailPath +
                 "\nDate: " + publicationDate + "\nShow at index: " + showAtIndexPage;
     }
 
@@ -57,14 +63,6 @@ public class BlogEntry {
         this.description = description;
     }
 
-    public String getSourceFile() {
-        return sourceFile;
-    }
-
-    public void setSourceFile(String sourceFile) {
-        this.sourceFile = sourceFile;
-    }
-
     public Date getPublicationDate() {
         return publicationDate;
     }
@@ -81,28 +79,12 @@ public class BlogEntry {
         this.updateHistory = updateHistory;
     }
 
-    public String[][] getAuthors() {
-        return authors;
+    public String getThumbnailPath() {
+        return thumbnailPath;
     }
 
-    public void setAuthors(String[][] authors) {
-        this.authors = authors;
-    }
-
-    public int getWordcount() {
-        return wordcount;
-    }
-
-    public void setWordcount(int wordcount) {
-        this.wordcount = wordcount;
-    }
-
-    public String getThumbnail() {
-        return thumbnail;
-    }
-
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setThumbnailPath(String thumbnailPath) {
+        this.thumbnailPath = thumbnailPath;
     }
 
     public boolean isShowAtIndexPage() {
@@ -113,11 +95,43 @@ public class BlogEntry {
         this.showAtIndexPage = showAtIndexPage;
     }
 
-    public String getLink() {
-        return link;
+    public String getContent() {
+        return content;
     }
 
-    public void setLink(String link){
-        this.link = link;
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getURL() {
+        return URL;
+    }
+
+    public void setURL(String URL) {
+        this.URL = URL;
+    }
+
+    public List<BlogEntry> getInternalLinks() {
+        return internalLinks;
+    }
+
+    public void setInternalLinks(List<BlogEntry> internalLinks) {
+        this.internalLinks = internalLinks;
+    }
+
+    public List<String> getExternaLinks() {
+        return externaLinks;
+    }
+
+    public void setExternaLinks(List<String> externaLinks) {
+        this.externaLinks = externaLinks;
+    }
+
+    public int getWordCount() {
+        return wordCount;
+    }
+
+    public void setWordCount(int wordCount) {
+        this.wordCount = wordCount;
     }
 }

@@ -9,12 +9,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Properties;
 
-public class Main {
+public class BlogInterpreter {
 
     //TODO anotação de scripts
 
     public static final Properties PROPERTIES = new Properties();
     public static final ArrayList<BlogEntry> ENTRIES = new ArrayList<>(30);
+
+    public static String FILE_SEPARATOR = File.separator;
 
     public static void main(String[] args) {
 //        PROPERTIES.setProperty("src",src.getAbsolutePath());
